@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+.custom-link {
+  cursor: pointer;
+}
+
+.sidebar-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.active-glow {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.28);
+}
+
+:root {
+  --erp-text: #e2e8f0;
+  --erp-app-bg: #0f172a;
+  --erp-content-bg-top: #0f172a;
+  --erp-content-bg-bottom: #0b1222;
+  --erp-sidebar-bg: radial-gradient(circle at 10% 20%, #12243f 0%, #0c172d 45%, #0a1324 100%);
+  --erp-sidebar-border: #1f2f4a;
+  --erp-sidebar-text: #e2e8f0;
+  --erp-nav-from: #0d1f3a;
+  --erp-nav-to: #123155;
+  --erp-nav-border: #1b2f4f;
+
+  --erp-auth-from: #0c1a2f;
+  --erp-auth-via: #16375d;
+  --erp-auth-to: #25507f;
+
+  --observer-bg-top: #ffffff;
+  --observer-bg-bottom: #7dd3fc;
+  --observer-banner-bg: #dbeafe;
+  --observer-banner-border: #22c55e;
+  --observer-banner-text: #1e3a8a;
+}
+
+:root.theme-light {
+  --erp-text: #0b1324;
+  --erp-app-bg: #dfe6f2;
+  --erp-content-bg-top: #eef1f7;
+  --erp-content-bg-bottom: #d5dfec;
+  --erp-sidebar-bg: radial-gradient(circle at 20% 20%, #1a3561 0%, #123257 50%, #0c2645 100%);
+  --erp-sidebar-border: #1f3153;
+  --erp-sidebar-text: #0b1324;
+  --erp-nav-from: #0f2f56;
+  --erp-nav-to: #1a4a80;
+  --erp-nav-border: #1c3e68;
+
+  --erp-auth-from: #0a3b74;
+  --erp-auth-via: #135aa4;
+  --erp-auth-to: #1d6fc4;
+
+  --observer-bg-top: #ffffff;
+  --observer-bg-bottom: #c4e3ff;
+  --observer-banner-bg: #e8f2ff;
+  --observer-banner-border: #22c55e;
+  --observer-banner-text: #0b1f44;
+}
+
+:root.theme-dark {
+  --erp-text: #f1f5f9;
+  --erp-app-bg: #0d1425;
+  --erp-content-bg-top: #0f192c;
+  --erp-content-bg-bottom: #0a0f1d;
+  --erp-sidebar-bg: radial-gradient(circle at 10% 20%, #12243f 0%, #0c172d 45%, #0a1324 100%);
+  --erp-sidebar-border: #16233c;
+  --erp-sidebar-text: #f1f5f9;
+  --erp-nav-from: #0d1f3a;
+  --erp-nav-to: #123155;
+  --erp-nav-border: #1b2f4f;
+
+  --erp-auth-from: #0c1a2f;
+  --erp-auth-via: #16375d;
+  --erp-auth-to: #25507f;
+
+  --observer-bg-top: #ffffff;
+  --observer-bg-bottom: #7dd3fc;
+  --observer-banner-bg: #dbeafe;
+  --observer-banner-border: #22c55e;
+  --observer-banner-text: #1e3a8a;
+}
+
+body {
+  background-color: var(--erp-app-bg);
+  color: var(--erp-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #696969 !important;
+  opacity: 1;
+}
+
+.erp-content-main {
+  background: radial-gradient(circle at 20% 20%, #15213c 0%, transparent 40%),
+    radial-gradient(circle at 80% 0%, #0f1f36 0%, transparent 40%),
+    linear-gradient(180deg, var(--erp-content-bg-top) 0%, var(--erp-content-bg-bottom) 100%);
+}
+
+.erp-auth-shell {
+  position: relative;
+  background: linear-gradient(150deg, var(--erp-auth-from) 0%, var(--erp-auth-via) 55%, var(--erp-auth-to) 100%);
+}
+
+.erp-auth-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+.erp-auth-orb--one {
+  top: -12%;
+  left: -8%;
+  width: 450px;
+  height: 450px;
+  background: #22d3ee;
+}
+
+.erp-auth-orb--two {
+  bottom: -14%;
+  right: -10%;
+  width: 420px;
+  height: 420px;
+  background: #60a5fa;
+}
+
+.erp-auth-card {
+  background: linear-gradient(160deg, rgba(8, 16, 31, 0.78) 0%, rgba(11, 26, 46, 0.72) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  box-shadow: 0 30px 60px -20px rgba(2, 12, 27, 0.7);
+  backdrop-filter: blur(14px);
+}
+
+.erp-auth-subcard {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(186, 230, 253, 0.2);
+}
+
+.erp-welcome-flow {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-left: 0.5rem;
+}
+
+.erp-welcome-flow::before {
+  content: "";
+  position: absolute;
+  left: 1.3rem;
+  top: 0.65rem;
+  bottom: 0.65rem;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.85) 0%, rgba(125, 211, 252, 0.35) 100%);
+}
+
+.erp-welcome-flow-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.erp-welcome-pointer {
+  position: relative;
+  z-index: 1;
+  width: 2.6rem;
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 900;
+  background: linear-gradient(145deg, #67e8f9 0%, #38bdf8 100%);
+  border: 2px solid rgba(224, 242, 254, 0.9);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  box-shadow: 0 10px 22px rgba(2, 6, 23, 0.28);
+}
+
+.erp-welcome-flow-copy {
+  min-height: 2.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed rgba(186, 230, 253, 0.28);
+}
+
+.erp-welcome-line {
+  position: relative;
+  padding-left: 1.2rem;
+  line-height: 1.45;
+}
+
+.erp-welcome-line::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #67e8f9;
+  font-weight: 900;
+}
+
+.observer-mode-main {
+  background: linear-gradient(160deg, var(--observer-bg-top) 0%, #cfeeff 34%, var(--observer-bg-bottom) 100%);
+  transition: background 220ms ease-in-out;
+}
+
+.observer-profile-banner {
+  background: linear-gradient(135deg, var(--observer-banner-bg) 0%, #eff6ff 100%);
+  border: 1px solid var(--observer-banner-border);
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.08);
+}
+
+.observer-profile-badge {
+  color: var(--observer-banner-text);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.observer-profile-message {
+  color: #1f2937;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.default-profile-avatar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 30%, #0ea5e9 0%, #0b172d 55%);
+  color: #e0f2fe;
+}
+
+.default-profile-avatar__ring {
+  position: absolute;
+  width: 78%;
+  height: 78%;
+  border-radius: 9999px;
+  border: 3px dashed rgba(224, 242, 254, 0.6);
+  animation: spin 10s linear infinite;
+}
+
+.default-profile-avatar__icon {
+  width: 54%;
+  height: 54%;
+  z-index: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .erp-welcome-flow {
+    gap: 1.35rem;
+  }
+
+  .erp-welcome-flow::before {
+    left: 1.15rem;
+  }
+
+  .erp-welcome-pointer {
+    width: 2.3rem;
+    height: 2.3rem;
+    font-size: 0.82rem;
+  }
+
+  .erp-welcome-flow-item {
+    gap: 0.8rem;
+  }
+
+  .erp-welcome-flow-copy {
+    padding-bottom: 0.85rem;
+  }
+
+  .observer-profile-message {
+    font-size: 0.92rem;
+  }
+}
+
+.default-profile-avatar {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 28%, #dbeafe 0%, #bfdbfe 38%, #93c5fd 100%);
+}
+
+.default-profile-avatar__ring {
+  width: 78%;
+  height: 78%;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  animation: profile-pulse 2.2s ease-in-out infinite;
+}
+
+.default-profile-avatar__icon {
+  position: absolute;
+  width: 48%;
+  height: 48%;
+  color: #1e3a8a;
+}
+
+@keyframes profile-pulse {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}

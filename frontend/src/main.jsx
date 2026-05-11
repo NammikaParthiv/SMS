@@ -1,0 +1,15 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+// 👇 THESE TWO LINES ARE THE SECRET TO YOUR DESIGN!
+import './index.css'; 
+
+import { AuthProvider } from './context/AuthProvider';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </React.StrictMode>
+);
