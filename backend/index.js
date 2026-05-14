@@ -31,7 +31,10 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: "https://sms-sage-mu.vercel.app",
+    origin: [
+  "https://sms-sage-mu.vercel.app",
+  "https://sms-git-main-parthiv-s-projects1.vercel.app",
+   ],
     credentials: true,
   }),
 )
