@@ -32,7 +32,6 @@ const seedTeachers = async () => {
       Attendence.deleteMany({}),
       Marks.deleteMany({}),
       Notification.deleteMany({}),
-      User.deleteMany({ role: { $ne: "admin" } }),
     ]);
 
     const teachers = [];
