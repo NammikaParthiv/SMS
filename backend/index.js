@@ -28,16 +28,16 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();
 });
-
 app.use(
   cors({
     origin: [
       "https://sms-sage-mu.vercel.app",
       "https://sms-git-main-parthiv-s-projects1.vercel.app",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
