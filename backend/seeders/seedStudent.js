@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import User from "../models/User.js";
-import Attendence from "../models/Attendence.js";
+import Attendence from "../models/Attendance.js";
 import Marks from "../models/Marks.js";
 import Submission from "../models/Submission.js";
 import Notification from "../models/Notification.js";

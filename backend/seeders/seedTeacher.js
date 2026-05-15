@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import User from "../models/User.js";
 import Assignment from "../models/Assignment.js";
 import Submission from "../models/Submission.js";
-import Attendence from "../models/Attendence.js";
+import Attendence from "../models/Attendance.js";
 import Marks from "../models/Marks.js";
 import Notification from "../models/Notification.js";
 import { faker } from "@faker-js/faker";
