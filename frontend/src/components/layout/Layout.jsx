@@ -32,22 +32,40 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[var(--erp-app-bg)] overflow-hidden">
+    <div className="sms-app-shell flex min-h-screen bg-[var(--erp-app-bg)] overflow-hidden">
+      {isSidebarOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-20 bg-slate-950/55 backdrop-blur-sm md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close sidebar"
+        />
+      )}
+
       <div
-        className={`${isSidebarOpen ? "w-72" : "w-24"} transition-all duration-300 bg-[var(--erp-sidebar-bg)] border-r border-[var(--erp-sidebar-border)] h-screen sticky top-0 flex-shrink-0`}
+        className={`${
+          isSidebarOpen ? "translate-x-0 md:w-72" : "-translate-x-full md:translate-x-0 md:w-24"
+        } fixed md:sticky top-0 left-0 z-30 w-72 transition-all duration-300 bg-[var(--erp-sidebar-bg)] border-r border-[var(--erp-sidebar-border)] h-screen flex-shrink-0`}
       >
-        <Sidebar isOpen={isSidebarOpen} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onNavigate={() => {
+            if (window.innerWidth < 768) {
+              setSidebarOpen(false);
+            }
+          }}
+        />
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      <div className="sms-page-frame flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         <header
-          className="h-20 border-b px-8 sticky top-0 z-10 flex items-center relative flex-shrink-0 shadow-[0_10px_30px_rgba(3,7,18,0.24)]"
+          className="sms-topbar h-18 md:h-20 border-b px-4 md:px-8 sticky top-0 z-10 flex items-center relative flex-shrink-0 shadow-[0_10px_30px_rgba(3,7,18,0.24)]"
           style={{
             background: `linear-gradient(90deg, var(--erp-nav-from) 0%, var(--erp-nav-to) 100%)`,
             borderColor: "var(--erp-nav-border)",
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
               className="p-2 hover:bg-white/10 rounded-xl transition-colors border border-white/5"
@@ -78,12 +96,12 @@ const Layout = () => {
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <h2 className="font-black text-white tracking-tight text-2xl md:text-3xl text-center">
+            <h2 className="sms-topbar-title font-black text-white tracking-tight text-base sm:text-2xl md:text-3xl text-center leading-tight px-24 md:px-0">
               School Management System
             </h2>
           </div>
 
-          <div className="flex items-center gap-4 justify-end flex-1">
+          <div className="flex items-center gap-2 md:gap-4 justify-end flex-1">
             <div className="text-right hidden md:block">
               <p className="text-2xl font-extrabold text-white tracking-tight leading-none">
                 {auth?.name || "User"}
@@ -121,7 +139,7 @@ const Layout = () => {
           </div>
         </header>
 
-        <main className={`p-6 md:p-10 flex-1 ${isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"}`}>
+        <main className={`sms-main-content p-4 sm:p-6 md:p-10 flex-1 ${isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"}`}>
           <Outlet />
         </main>
       </div>

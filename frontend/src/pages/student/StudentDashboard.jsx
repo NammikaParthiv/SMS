@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   deleteStudentProfilePhoto,
+  getReportCardUrl,
   getMyStats,
   getStudentProfile,
   uploadStudentProfilePhoto,
@@ -142,28 +143,8 @@ const StudentProfile = () => {
     Math.max((student.attendanceTotalDays || 0) - presentDays, 0);
   const circleSize = 220;
   const radius = 95;
-  const cx = 110;
-  const cy = 110;
-
-  const degToRad = (deg) => (deg * Math.PI) / 180;
-  const polarToCartesian = (centerX, centerY, r, angleInDegrees) => {
-    const angleInRadians = degToRad(angleInDegrees - 90);
-    return {
-      x: centerX + r * Math.cos(angleInRadians),
-      y: centerY + r * Math.sin(angleInRadians),
-    };
-  };
-
-  const describeArc = (startAngle, endAngle) => {
-    const start = polarToCartesian(cx, cy, radius, endAngle);
-    const end = polarToCartesian(cx, cy, radius, startAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y} L ${cx} ${cy} Z`;
-  };
 
   const presentAngle = (attendancePercent / 100) * 360;
-  const presentPath = describeArc(0, presentAngle || 0.01);
-  const absentPath = describeArc(presentAngle, 360);
   const attendanceBackground =
     attendancePercent >= 100
       ? "#22c55e"
@@ -458,9 +439,7 @@ const StudentProfile = () => {
         </div>
 
         <button
-          onClick={() =>
-            window.open(`${import.meta.env.VITE_API_URL}/student/report-card/${student._id}`, "_blank")
-          }
+          onClick={() => window.open(getReportCardUrl(student._id), "_blank")}
           className="flex items-center gap-4 px-10 py-5 bg-white text-slate-900 rounded-[1.5rem] font-black uppercase text-xs tracking-[0.2em] hover:bg-indigo-500 hover:text-white transition-all shadow-xl"
         >
           Download Progress Card

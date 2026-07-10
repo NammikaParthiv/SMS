@@ -23,6 +23,12 @@ dotenv.config();
 
 const PORT = process.env.PORT || 1000;
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://sms-sage-mu.vercel.app",
+  "https://sms-git-main-parthiv-s-projects1.vercel.app",
+];
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);
@@ -30,10 +36,7 @@ app.use((req, res, next) => {
 });
 app.use(
   cors({
-    origin: [
-      "https://sms-sage-mu.vercel.app",
-      "https://sms-git-main-parthiv-s-projects1.vercel.app",
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],

@@ -1,6 +1,6 @@
 import React from "react";
 
-const TeacherDashboard = ({ user }) => {
+const TeacherDashboard = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-4xl p-10 text-white shadow-2xl">

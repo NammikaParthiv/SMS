@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { fetchMyMarksSummary } from "../api/axios";
-import { useAuth } from "../hooks/useAuth";
 
 const Marks = () => {
-  const { auth } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [exams, setExams] = useState([]);

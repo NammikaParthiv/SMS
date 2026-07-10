@@ -1,7 +1,11 @@
 import axios from "axios";
 
+export const apiBaseUrl = String(import.meta.env.VITE_API_URL || "http://localhost:1000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
+
 const instance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: `${apiBaseUrl}/api`,
 });
 
 instance.interceptors.request.use((config) => {
@@ -20,7 +24,10 @@ instance.interceptors.response.use(
   (error) => {
     const requestUrl = error.config?.url || "";
     const isAuthRequest =
-      requestUrl.includes("/auth/login") || requestUrl.includes("/auth/register");
+      requestUrl.includes("/auth/login") ||
+      requestUrl.includes("/auth/register") ||
+      requestUrl.includes("/auth/forgot-password") ||
+      requestUrl.includes("/auth/reset-password");
 
     if (error.response?.status === 401 && !isAuthRequest) {
       localStorage.clear();
@@ -70,6 +77,11 @@ export const fetchClassAverageMarks = () => instance.get("/admin/marks/averages"
 export const fetchAdminDashboard = () => instance.get("/admin/dashboard");
 export const sendAdminBroadcast = (payload) => instance.post("/admin/notifications/broadcast", payload);
 
+// --- AUTH API CALLS ---
+export const requestPasswordReset = (email) => instance.post("/auth/forgot-password", { email });
+export const resetPassword = (token, payload) =>
+  instance.post(`/auth/reset-password/${token}`, payload);
+
 // --- NOTES API CALLS ---
 export const uploadNote = (formData) =>
   instance.post("/notes/teacher", formData, {
@@ -107,6 +119,8 @@ export const fetchMyAcademicAttendance = (academicStartYear) =>
 export const getMyStats = () => instance.get("/student/dashboard");
 export const downloadReportCard = (studentId) =>
   instance.get(`/student/report-card/${studentId}`, { responseType: "blob" });
+export const getReportCardUrl = (studentId) =>
+  `${apiBaseUrl}/api/student/report-card/${studentId}`;
 export const fetchMyNotifications = (params) =>
   instance.get("/notifications/mine", { params });
 export const markNotificationRead = (id) =>

@@ -136,9 +136,14 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-sky-100 uppercase tracking-widest ml-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between gap-3 ml-1">
+                <label className="text-[10px] font-black text-sky-100 uppercase tracking-widest">
+                  Password
+                </label>
+                <Link to="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-cyan-200 hover:text-white">
+                  Forgot?
+                </Link>
+              </div>
               <input
                 type="password"
                 required

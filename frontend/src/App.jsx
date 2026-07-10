@@ -9,9 +9,11 @@ import AdminMarks from "./pages/admin/AdminMarks";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import Assignments from "./pages/Assignments";
 import Home from "./pages/Home";
+import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 import Welcome from "./pages/Welcome";
 import Attendance from "./pages/Attendance";
 import MyClasses from "./pages/teacher/MyClasses";
@@ -24,6 +26,9 @@ import Marks from "./pages/Marks";
 
 function App() {
   const { auth, loading } = useAuth();
+  const role = auth?.role?.toLowerCase();
+  const can = (...roles) => roles.includes(role);
+  const dashboard = <Navigate to="/dashboard" replace />;
 
   if (loading) {
     return <div className="h-screen flex items-center justify-center font-black">LOADING...</div>;
@@ -37,11 +42,19 @@ function App() {
 
         <Route
           path="/login"
-          element={!auth ? <Login /> : <Navigate to="/dashboard" replace />}
+          element={!auth ? <Login /> : dashboard}
         />
         <Route
           path="/register"
-          element={!auth ? <Register /> : <Navigate to="/dashboard" replace />}
+          element={!auth ? <Register /> : dashboard}
+        />
+        <Route
+          path="/forgot-password"
+          element={!auth ? <ForgotPassword /> : dashboard}
+        />
+        <Route
+          path="/reset-password/:token"
+          element={!auth ? <ResetPassword /> : dashboard}
         />
 
         <Route element={auth ? <Layout /> : <Navigate to="/" replace />}>
@@ -51,9 +64,7 @@ function App() {
           <Route
             path="/assignments"
             element={
-              auth?.role?.toLowerCase() === "admin" ? (
-                <Navigate to="/dashboard" replace />
-              ) : auth?.role?.toLowerCase() === "teacher" ? (
+              can("admin") ? dashboard : can("teacher") ? (
                 <TeacherAssignent />
               ) : (
                 <Assignments role="Student" />
@@ -63,10 +74,10 @@ function App() {
           <Route
             path="/assignments/:assignmentId/submissions/:slug?"
             element={
-              auth?.role?.toLowerCase() === "teacher" ? (
+              can("teacher") ? (
                 <AssignmentSubmissions />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />
@@ -74,27 +85,27 @@ function App() {
           <Route
             path="/admin/teachers"
             element={
-              auth?.role?.toLowerCase() === "admin" ? <TeacherDirectory /> : <Navigate to="/dashboard" replace />
+              can("admin") ? <TeacherDirectory /> : dashboard
             }
           />
-          <Route path="/admin/students" element={auth?.role?.toLowerCase() === "admin" ? <StudentList /> : <Navigate to="/dashboard" replace />} />
+          <Route path="/admin/students" element={can("admin") ? <StudentList /> : dashboard} />
           <Route
             path="/admin/allocations"
             element={
-              auth?.role?.toLowerCase() === "admin" ? (
+              can("admin") ? (
                 <TeacherAllocations />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />
           <Route
             path="/admin/notifications"
             element={
-              auth?.role?.toLowerCase() === "admin" ? (
+              can("admin") ? (
                 <AdminNotifications />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />
@@ -102,10 +113,10 @@ function App() {
           <Route
             path="/teacher/classes"
             element={
-              auth?.role?.toLowerCase() === "teacher" ? (
+              can("teacher") ? (
                 <MyClasses />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />
@@ -115,9 +126,9 @@ function App() {
           <Route
           path="/marks"
           element={
-            auth?.role?.toLowerCase() === "admin" ? (
+            can("admin") ? (
               <AdminMarks />
-            ) : auth?.role?.toLowerCase() === "teacher" ? (
+            ) : can("teacher") ? (
               <TeacherMarks />
             ) : (
               <Marks />
@@ -128,10 +139,10 @@ function App() {
           <Route
             path="/notes"
             element={
-              auth?.role?.toLowerCase() === "teacher" || auth?.role?.toLowerCase() === "student" ? (
+              can("teacher", "student") ? (
                 <Notes />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />
@@ -139,10 +150,10 @@ function App() {
           <Route
             path="/attendance"
             element={
-              auth?.role?.toLowerCase() === "teacher" || auth?.role?.toLowerCase() === "student" ? (
+              can("teacher", "student") ? (
                 <Attendance />
               ) : (
-                <Navigate to="/dashboard" replace />
+                dashboard
               )
             }
           />

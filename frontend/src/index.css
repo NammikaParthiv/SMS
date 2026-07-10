@@ -86,6 +86,17 @@ body {
   color: var(--erp-text);
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: #696969 !important;
@@ -231,31 +242,6 @@ textarea::placeholder {
   font-weight: 700;
 }
 
-.default-profile-avatar {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 30% 30%, #0ea5e9 0%, #0b172d 55%);
-  color: #e0f2fe;
-}
-
-.default-profile-avatar__ring {
-  position: absolute;
-  width: 78%;
-  height: 78%;
-  border-radius: 9999px;
-  border: 3px dashed rgba(224, 242, 254, 0.6);
-  animation: spin 10s linear infinite;
-}
-
-.default-profile-avatar__icon {
-  width: 54%;
-  height: 54%;
-  z-index: 1;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -263,6 +249,85 @@ textarea::placeholder {
 }
 
 @media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .sms-app-shell,
+  .sms-page-frame {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sms-main-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sms-main-content > * {
+    max-width: 100%;
+  }
+
+  .sms-main-content :is(input, select, textarea, button) {
+    max-width: 100%;
+  }
+
+  .sms-main-content :is(h1, h2, h3, p, span, label, button, a) {
+    overflow-wrap: anywhere;
+  }
+
+  .sms-main-content div:has(> table) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sms-main-content table {
+    min-width: 640px;
+  }
+
+  .sms-main-content :is(.p-10, .p-12) {
+    padding: 1.5rem;
+  }
+
+  .sms-main-content :is(.text-5xl, .text-4xl) {
+    font-size: 2rem;
+    line-height: 1.12;
+  }
+
+  .sms-main-content :is(.text-6xl) {
+    font-size: 2.35rem;
+    line-height: 1.05;
+  }
+
+  .sms-main-content :is(.text-3xl) {
+    font-size: 1.6rem;
+    line-height: 1.16;
+  }
+
+  .erp-auth-shell {
+    min-height: 100dvh;
+    padding: 1rem;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .erp-auth-orb {
+    opacity: 0.16;
+  }
+
+  .erp-auth-card {
+    border-radius: 1.6rem;
+  }
+
+  .erp-auth-subcard {
+    min-height: 13rem;
+    padding: 1.5rem;
+  }
+
+  .erp-auth-subcard img {
+    max-height: 11rem;
+  }
+
   .erp-welcome-flow {
     gap: 1.35rem;
   }
@@ -287,6 +352,100 @@ textarea::placeholder {
 
   .observer-profile-message {
     font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .sms-topbar {
+    min-height: 4.5rem;
+  }
+
+  .sms-topbar-title {
+    font-size: 0.95rem;
+    max-width: 12rem;
+    padding-inline: 0;
+  }
+
+  .sms-main-content {
+    padding: 1rem;
+  }
+
+  .sms-main-content > div {
+    margin-inline: 0;
+  }
+
+  .sms-main-content :is(.gap-8, .gap-10) {
+    gap: 1rem;
+  }
+
+  .sms-main-content :is(.mt-12, .mt-14, .mt-16) {
+    margin-top: 1.25rem;
+  }
+
+  .sms-main-content :is(.mb-16) {
+    margin-bottom: 1.5rem;
+  }
+
+  .sms-main-content :is(.p-6, .p-8, .p-10, .p-12, .md\:p-10) {
+    padding: 1rem;
+  }
+
+  .sms-main-content [class*="rounded-["],
+  .sms-main-content :is(.rounded-4xl, .rounded-3xl) {
+    border-radius: 1.25rem;
+  }
+
+  .sms-main-content :is(.w-40, .h-40) {
+    width: 8rem;
+    height: 8rem;
+  }
+
+  .sms-main-content :is(.w-12, .h-12, .w-16, .h-16) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .sms-main-content :is(button, a) {
+    min-height: 2.75rem;
+  }
+
+  .sms-main-content :is(.px-10) {
+    padding-inline: 1rem;
+  }
+
+  .sms-main-content :is(.py-5) {
+    padding-block: 0.9rem;
+  }
+
+  .sms-main-content :is(.tracking-\[0\.2em\], .tracking-widest) {
+    letter-spacing: 0.08em;
+  }
+
+  .erp-auth-shell {
+    padding: 0.9rem;
+  }
+
+  .erp-auth-card {
+    max-height: none;
+  }
+
+  .erp-auth-card :is(.p-8, .p-10, .md\:p-14, .md\:p-16) {
+    padding: 1.25rem;
+  }
+
+  .erp-auth-card :is(.text-5xl, .text-4xl) {
+    font-size: 2rem;
+    line-height: 1.05;
+  }
+
+  .erp-auth-card :is(input, select) {
+    min-height: 3rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .erp-auth-card button {
+    min-height: 3rem;
   }
 }
 

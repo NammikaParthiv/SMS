@@ -36,7 +36,7 @@ const SchoolLogo = ({ compact }) => {
   );
 };
 
-const Sidebar = ({ isOpen }) => {
+const Sidebar = ({ isOpen, onNavigate }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { auth } = useAuth();
@@ -79,7 +79,10 @@ const Sidebar = ({ isOpen }) => {
         <button
           type="button"
           className="w-full flex items-center justify-center cursor-pointer"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => {
+            navigate("/dashboard");
+            onNavigate?.();
+          }}
           aria-label="Go to dashboard"
         >
           <SchoolLogo compact={!isOpen} />
@@ -92,7 +95,10 @@ const Sidebar = ({ isOpen }) => {
           return (
             <button
               key={item.name}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path);
+                onNavigate?.();
+              }}
               className={`w-full flex items-center h-14 px-4 rounded-2xl transition-all duration-200 group cursor-pointer ${
                 isActive
                   ? "bg-sky-600 text-white shadow-lg shadow-sky-900/25"
