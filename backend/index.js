@@ -18,6 +18,7 @@ import frontendCompatRoutes from "./routes/frontendCompatRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import teacherClassRoutes from "./routes/teacherClassRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
+import requestLogger from "./utils/requestLogger.js";
 
 dotenv.config();
 
@@ -25,15 +26,11 @@ const PORT = process.env.PORT || 1000;
 const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://127.0.0.1:5173",
   "https://sms-sage-mu.vercel.app",
   "https://sms-git-main-parthiv-s-projects1.vercel.app",
 ];
 
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
+app.use(requestLogger);
 app.use(
   cors({
     origin: allowedOrigins,
@@ -68,7 +65,7 @@ app.use("/api/notes", noteRoutes);
 app.use("/api", frontendCompatRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Backend is running...");
+  res.send("Backend is running");
 });
 
 app.listen(PORT, () => {

@@ -1,9 +1,9 @@
-export const TEACHER_SUBJECTS = [
+export default TEACHER_SUBJECTS = [
   "maths",
   "physics",
   "chemistry",
   "social",
-  "biology",
   "english",
   "hindi",
+  "biology",
 ];

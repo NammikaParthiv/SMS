@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../../hooks/useAuth";
@@ -6,15 +6,16 @@ import { useAuth } from "../../hooks/useAuth";
 const Layout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem("erp-theme") || "dark");
+  const [theme, setTheme] = useState(() => localStorage.getItem("erp-theme") || "light");
   const { auth, logout } = useAuth();
   const location = useLocation();
+  const menuRef = useRef(null);
 
   const isAdminObserverProfileRoute =
     auth?.role?.toLowerCase() === "admin" && /^\/profile\/[^/]+$/.test(location.pathname);
 
   const handleLogoutClick = () => {
-    const confirmed = window.confirm("Confirm: do you want to logout?");
+    const confirmed = window.confirm("Are you sure you want to log out?");
     if (confirmed) {
       logout();
     }
@@ -22,21 +23,39 @@ const Layout = () => {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("theme-dark", "theme-light");
-    root.classList.add(`theme-${theme}`);
+    root.classList.remove("theme-dark", "theme-light", "dark");
+    if (theme === "dark") {
+      root.classList.add("theme-dark", "dark");
+    } else {
+      root.classList.add("theme-light");
+    }
     localStorage.setItem("erp-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowLogoutMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
-    <div className="sms-app-shell flex min-h-screen bg-[var(--erp-app-bg)] overflow-hidden">
+    <div
+      className={`flex h-screen w-full font-sans overflow-hidden transition-colors duration-200 ${
+        theme === "dark" ? "bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-800"
+      }`}
+    >
       {isSidebarOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-20 bg-slate-950/55 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-label="Close sidebar"
         />
@@ -44,8 +63,8 @@ const Layout = () => {
 
       <div
         className={`${
-          isSidebarOpen ? "translate-x-0 md:w-72" : "-translate-x-full md:translate-x-0 md:w-24"
-        } fixed md:sticky top-0 left-0 z-30 w-72 transition-all duration-300 bg-[var(--erp-sidebar-bg)] border-r border-[var(--erp-sidebar-border)] h-screen flex-shrink-0`}
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        } fixed md:static top-0 left-0 z-50 h-full flex-shrink-0 transition-transform duration-200`}
       >
         <Sidebar
           isOpen={isSidebarOpen}
@@ -57,90 +76,121 @@ const Layout = () => {
         />
       </div>
 
-      <div className="sms-page-frame flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      <div
+        className={`flex-1 flex flex-col min-w-0 h-full overflow-hidden ${
+          theme === "dark" ? "bg-slate-950" : "bg-slate-100"
+        }`}
+      >
         <header
-          className="sms-topbar h-18 md:h-20 border-b px-4 md:px-8 sticky top-0 z-10 flex items-center relative flex-shrink-0 shadow-[0_10px_30px_rgba(3,7,18,0.24)]"
-          style={{
-            background: `linear-gradient(90deg, var(--erp-nav-from) 0%, var(--erp-nav-to) 100%)`,
-            borderColor: "var(--erp-nav-border)",
-          }}
+          className={`h-16 px-4 sm:px-6 flex items-center justify-between border-b flex-shrink-0 transition-colors duration-200 ${
+            theme === "dark"
+              ? "bg-slate-900 border-slate-800 text-white"
+              : "bg-white border-slate-300 text-slate-900"
+          }`}
         >
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
+              type="button"
               onClick={() => setSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-white/10 rounded-xl transition-colors border border-white/5"
+              className={`p-2 rounded-lg border text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
+                theme === "dark"
+                  ? "border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700"
+                  : "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-200"
+              }`}
               aria-label="Toggle sidebar"
             >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
 
             <button
               type="button"
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+              className={`p-2 rounded-lg border text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
+                theme === "dark"
+                  ? "border-slate-700 bg-slate-800 text-yellow-400 hover:bg-slate-700"
+                  : "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-200"
+              }`}
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95 6.95-1.414-1.414M6.464 7.05 5.05 5.636m0 12.728 1.414-1.414M17.536 7.05l1.414-1.414" />
                   <circle cx="12" cy="12" r="4" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
                 </svg>
               )}
             </button>
           </div>
 
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <h2 className="sms-topbar-title font-black text-white tracking-tight text-base sm:text-2xl md:text-3xl text-center leading-tight px-24 md:px-0">
-              School Management System
-            </h2>
+          <div className="flex items-center">
+            <h1 className="font-bold tracking-tight text-base sm:text-lg">
+              Pyramid School
+            </h1>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 justify-end flex-1">
-            <div className="text-right hidden md:block">
-              <p className="text-2xl font-extrabold text-white tracking-tight leading-none">
-                {auth?.name || "User"}
-              </p>
-            </div>
-            <div className="relative" tabIndex={0}>
-              <button
-                type="button"
-                onClick={() => setShowLogoutMenu((prev) => !prev)}
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
-                aria-label="Open logout menu"
-              >
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 17l5-5-5-5" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H3" />
-                </svg>
-              </button>
+          <div className="flex items-center gap-3 relative" ref={menuRef}>
+            <span className="text-lg sm:text-xl font-bold tracking-tight">
+              {auth?.name || "User"}
+            </span>
 
-              {showLogoutMenu && (
-                <div className="absolute right-0 mt-3 w-40 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+            <button
+              type="button"
+              onClick={() => setShowLogoutMenu((prev) => !prev)}
+              className={`w-9 h-9 rounded-lg border flex items-center justify-center font-bold text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
+                theme === "dark"
+                  ? "bg-slate-800 text-teal-300 border-slate-700 hover:bg-slate-700"
+                  : "bg-slate-800 text-white border-slate-900 hover:bg-slate-700"
+              }`}
+              aria-label="User menu"
+            >
+              {auth?.name ? auth.name.charAt(0).toUpperCase() : "U"}
+            </button>
+
+            {showLogoutMenu && (
+              <div
+                className={`absolute right-0 top-12 w-44 rounded-xl shadow-lg border overflow-hidden z-50 ${
+                  theme === "dark"
+                    ? "bg-slate-900 border-slate-700 text-slate-200"
+                    : "bg-white border-slate-300 text-slate-800"
+                }`}
+              >
+                <div className="p-1">
                   <button
                     type="button"
                     onClick={() => {
                       setShowLogoutMenu(false);
                       handleLogoutClick();
                     }}
-                    className="w-full text-left px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50"
+                    className={`w-full text-left flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                      theme === "dark"
+                        ? "text-red-400 hover:bg-red-950/40"
+                        : "text-red-600 hover:bg-red-50"
+                    }`}
                   >
-                    Logout
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>Logout</span>
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </header>
 
-        <main className={`sms-main-content p-4 sm:p-6 md:p-10 flex-1 ${isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"}`}>
-          <Outlet />
+        <main
+          className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 ${
+            isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
@@ -148,4 +198,3 @@ const Layout = () => {
 };
 
 export default Layout;
-

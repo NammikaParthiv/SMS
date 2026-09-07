@@ -36,10 +36,11 @@ const SchoolLogo = ({ compact }) => {
   );
 };
 
-const Sidebar = ({ isOpen, onNavigate }) => {
+const Sidebar = ({ isOpen, onNavigate, theme }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { auth } = useAuth();
+  const isDark = theme === "dark";
 
   const roleMenus = {
     admin: [
@@ -73,7 +74,13 @@ const Sidebar = ({ isOpen, onNavigate }) => {
 
   return (
     <div
-      className={`${isOpen ? "w-72" : "w-24"} bg-[var(--erp-sidebar-bg)] text-[var(--erp-sidebar-text)] h-screen sticky top-0 transition-all duration-300 flex flex-col z-20 hover:cursor-pointer`}
+      className={`${
+        isOpen ? "w-72" : "w-24"
+      } h-screen sticky top-0 transition-all duration-300 flex flex-col z-20 hover:cursor-pointer border-r ${
+        isDark
+          ? "bg-slate-900 text-slate-100 border-slate-800"
+          : "bg-white text-slate-700 border-slate-200 shadow-sm"
+      }`}
     >
       <div className="px-4 pt-5 pb-5">
         <button
@@ -101,14 +108,28 @@ const Sidebar = ({ isOpen, onNavigate }) => {
               }}
               className={`w-full flex items-center h-14 px-4 rounded-2xl transition-all duration-200 group cursor-pointer ${
                 isActive
-                  ? "bg-sky-600 text-white shadow-lg shadow-sky-900/25"
-                  : "text-[var(--erp-sidebar-text)] hover:bg-white/10 hover:text-white"
+                  ? "bg-sky-600 text-white shadow-lg shadow-sky-600/25"
+                  : isDark
+                  ? "text-slate-200 hover:bg-white/10 hover:text-white"
+                  : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${isActive ? "bg-white/20" : "bg-white/10"}`}>
+              <span
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${
+                  isActive
+                    ? "bg-white/20 text-white"
+                    : isDark
+                    ? "bg-white/10 text-white"
+                    : "bg-slate-100 text-slate-800"
+                }`}
+              >
                 {item.icon}
               </span>
-              {isOpen && <span className="ml-4 font-bold text-sm tracking-wide">{item.name}</span>}
+              {isOpen && (
+                <span className="ml-4 font-bold text-sm tracking-wide">
+                  {item.name}
+                </span>
+              )}
             </button>
           );
         })}

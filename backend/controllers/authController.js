@@ -247,13 +247,17 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password, role, classAssigned } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ msg: "Please check the email or password!" });
+    if (!email) {
+      return res.status(400).json({ msg: "Email is required" });
+    }
+
+    if (!password) {
+      return res.status(400).json({ msg: "Password is required" });
     }
 
     const findUser = await User.findOne({ email: normalizeEmail(email) });
     if (!findUser) {
-      return res.status(401).json({ msg: "Invalid Credentials" });
+      return res.status(404).json({ msg: "No account found with this email. Please register first." });
     }
 
     const selectedRole = normalizeRole(role);
@@ -295,7 +299,7 @@ export const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, findUser.password);
     if (!isMatch) {
-      return res.status(401).json({ msg: "Invalid Password!" });
+      return res.status(401).json({ msg: "Incorrect password. Please try again or reset your password." });
     }
 
     if (findUser.role === "student") {

@@ -50,17 +50,12 @@ export const AuthProvider = ({ children }) => {
   });
   const [logoutTimer, setLogoutTimer] = useState(null);
 
-  const login = async (email, password, role, classAssigned) => {
+  const login = async (email, password) => {
     try {
       const payload = {
         email,
         password,
-        role: role?.toLowerCase(),
       };
-
-      if (payload.role === "student") {
-        payload.classAssigned = classAssigned;
-      }
 
       const { data } = await API.post("/auth/login", payload);
       const userData = { ...data.user, token: data.token };
@@ -78,13 +73,9 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
-      const isInvalidCredentials = error.response?.status === 401;
-
       return {
         success: false,
-        message: isInvalidCredentials
-          ? "Invalid email or incorrect password"
-          : error.response?.data?.msg || "Login Failed",
+        message: error.response?.data?.msg || "Login Failed",
       };
     }
   };

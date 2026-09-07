@@ -10,7 +10,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const seedAdmin = async() =>{
     try{
         await mongoose.connect(MONGO_URI);
-        const hashedpassword = await bcrypt.hash("admin123",10);
+        const hashedpassword = await bcrypt.hash("admin@123",10);
         await User.deleteMany({role: "admin"});
 
         const admins = [

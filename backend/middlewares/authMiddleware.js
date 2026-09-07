@@ -17,14 +17,14 @@ const protect = (req, res, next) => {
       next();
     } catch (error) {
       res.status(401).json({
-        msg: "Not Authorized ,No token",
+        msg: "Token is present but not valid",
       });
     }
   }
 
   if (!token) {
     res.status(400).json({
-      msg: "No Authorized Token found",
+      msg: "No Token found",
     });
   }
 };
