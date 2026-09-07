@@ -1,4 +1,4 @@
-export default TEACHER_SUBJECTS = [
+export const TEACHER_SUBJECTS = [
   "maths",
   "physics",
   "chemistry",
