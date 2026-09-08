@@ -4,7 +4,9 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "../../hooks/useAuth";
 
 const Layout = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isSidebarOpen, setSidebarOpen] = useState(() => {
+    return typeof window !== "undefined" ? window.innerWidth >= 768 : true;
+  });
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("erp-theme") || "light");
   const { auth, logout } = useAuth();
@@ -55,7 +57,7 @@ const Layout = () => {
       {isSidebarOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-xs"
           onClick={() => setSidebarOpen(false)}
           aria-label="Close sidebar"
         />
@@ -64,7 +66,7 @@ const Layout = () => {
       <div
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } fixed md:static top-0 left-0 z-50 h-full flex-shrink-0 transition-transform duration-200`}
+        } fixed md:static top-0 left-0 z-50 h-full shrink-0 transition-transform duration-200 ease-in-out`}
       >
         <Sidebar
           isOpen={isSidebarOpen}
@@ -82,13 +84,13 @@ const Layout = () => {
         }`}
       >
         <header
-          className={`h-16 px-4 sm:px-6 flex items-center justify-between border-b flex-shrink-0 transition-colors duration-200 ${
+          className={`h-16 sm:h-19 px-3 sm:px-6 flex items-center justify-between border-b shrink-0 transition-colors duration-200 ${
             theme === "dark"
               ? "bg-slate-900 border-slate-800 text-white"
               : "bg-white border-slate-300 text-slate-900"
           }`}
         >
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -127,14 +129,14 @@ const Layout = () => {
             </button>
           </div>
 
-          <div className="flex items-center">
-            <h1 className="font-bold tracking-tight text-base sm:text-lg">
-              Pyramid School
+          <div className="flex items-center px-1">
+            <h1 className="text-sm sm:text-lg md:text-xl font-bold tracking-tight truncate max-w-35 xs:max-w-[190px] sm:max-w-none">
+              🛕 Pyramid School
             </h1>
           </div>
 
-          <div className="flex items-center gap-3 relative" ref={menuRef}>
-            <span className="text-lg sm:text-xl font-bold tracking-tight">
+          <div className="flex items-center gap-2 sm:gap-3 relative" ref={menuRef}>
+            <span className="hidden sm:inline-block text-lg sm:text-xl font-bold tracking-tight">
               {auth?.name || "User"}
             </span>
 
@@ -160,6 +162,11 @@ const Layout = () => {
                 }`}
               >
                 <div className="p-1">
+                  <div className="sm:hidden px-3 py-2 border-b border-slate-200 dark:border-slate-800">
+                    <p className="text-xs font-bold truncate text-slate-900 dark:text-slate-100">
+                      {auth?.name || "User"}
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
@@ -184,7 +191,7 @@ const Layout = () => {
         </header>
 
         <main
-          className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 ${
+          className={`flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 ${
             isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"
           }`}
         >

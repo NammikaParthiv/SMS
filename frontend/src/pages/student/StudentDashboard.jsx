@@ -244,7 +244,7 @@ const StudentProfile = () => {
           )}
 
           {uploadError && (
-            <p className="text-[11px] font-semibold text-rose-600 text-center max-w-[170px]">{uploadError}</p>
+            <p className="text-[11px] font-semibold text-rose-600 text-center max-w-42.5">{uploadError}</p>
           )}
         </div>
       </div>
