@@ -37,6 +37,12 @@ const Assignments = () => {
     return list;
   }, [tasks]);
 
+  const assignmentSummary = useMemo(() => ({
+    total: tasks.length,
+    pending: tasks.filter((task) => task.status === "Pending").length,
+    submitted: tasks.filter((task) => task.status === "Submitted").length,
+  }), [tasks]);
+
   const toPublicFileUrl = (filePath) => {
     if (!filePath) return "";
     const normalized = String(filePath).replace(/\\/g, "/").replace(/^\/+/, "");
@@ -89,7 +95,7 @@ const Assignments = () => {
   };
 
   return (
-    <div className="mx-4 md:mx-12 mt-12 mb-16 animate-in fade-in duration-700">
+    <div className="space-y-7 animate-in fade-in duration-700">
       {error && (
         <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm font-bold">
           {error}
@@ -111,7 +117,15 @@ const Assignments = () => {
           No assignments available for your class right now.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <>
+          <section className="relative overflow-hidden rounded-4xl bg-linear-to-br from-sky-700 via-indigo-700 to-violet-800 p-8 sm:p-10 text-white shadow-xl">
+            <div className="absolute -right-10 top-0 h-52 w-52 rounded-full bg-cyan-300/15" />
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div><p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200">Learning workspace</p><h1 className="mt-3 text-4xl font-black tracking-tight">My Assignments</h1><p className="mt-2 text-sm font-medium text-indigo-100">Open each assignment to view instructions and submit your work.</p></div>
+              <div className="grid grid-cols-3 gap-3 text-center"><div className="rounded-2xl bg-white/10 p-3"><p className="text-2xl font-black">{assignmentSummary.total}</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Total</p></div><div className="rounded-2xl bg-white/10 p-3"><p className="text-2xl font-black">{assignmentSummary.pending}</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">To do</p></div><div className="rounded-2xl bg-white/10 p-3"><p className="text-2xl font-black">{assignmentSummary.submitted}</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Done</p></div></div>
+            </div>
+          </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {orderedTasks.map((task) => (
             <div
               key={task.id}
@@ -119,7 +133,7 @@ const Assignments = () => {
                 setSelectedTask(task);
                 setSubmissionFile(null);
               }}
-              className="group relative bg-white p-12 rounded-[2.8rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden min-h-[320px]"
+              className="group relative bg-white p-7 sm:p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer overflow-hidden min-h-[280px]"
             >
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-6">
@@ -139,7 +153,7 @@ const Assignments = () => {
                   </span>
                 </div>
 
-                <h3 className="text-3xl font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                <h3 className="text-2xl font-black text-slate-800 group-hover:text-indigo-600 transition-colors">
                   {task.title}
                 </h3>
 
@@ -151,13 +165,14 @@ const Assignments = () => {
                   Class: <span className="text-slate-600">{task.classAssigned}</span>
                 </p>
 
-                <div className="mt-12 flex items-center text-indigo-600 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+                <div className="mt-8 flex items-center text-indigo-600 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
                   Open Assignment
                 </div>
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </>
       )}
 
       {selectedTask && (

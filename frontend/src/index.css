@@ -40,6 +40,58 @@ textarea::placeholder {
     linear-gradient(180deg, #0f172a 0%, #0b1222 100%);
 }
 
+.theme-light .erp-content-main {
+  background: radial-gradient(circle at 8% 0%, #dbeafe 0%, transparent 30%),
+    radial-gradient(circle at 96% 10%, #e0e7ff 0%, transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+}
+
+.theme-dark .erp-content-main {
+  background: radial-gradient(circle at 20% 0%, #243b63 0%, transparent 38%),
+    radial-gradient(circle at 85% 10%, #312e81 0%, transparent 32%),
+    linear-gradient(180deg, #0f172a 0%, #020617 100%);
+}
+
+/* Page components use Tailwind's light utility classes.  These scoped overrides
+   make the selected theme apply to every card, form, table and modal—not only
+   the navigation shell. */
+.theme-dark body { color: #e2e8f0; background: #020617; }
+
+.theme-dark .sms-main-content :is(.bg-white, .bg-slate-50, .bg-slate-100) {
+  background-color: #172033 !important;
+  border-color: #334155 !important;
+}
+
+.theme-dark .sms-main-content :is(.bg-slate-200, .bg-gray-50) {
+  background-color: #243047 !important;
+}
+
+.theme-dark .sms-main-content :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-gray-900, .text-gray-800) {
+  color: #f1f5f9 !important;
+}
+
+.theme-dark .sms-main-content :is(.text-slate-600, .text-slate-500, .text-slate-400, .text-gray-600, .text-gray-500) {
+  color: #cbd5e1 !important;
+}
+
+.theme-dark .sms-main-content :is(input, select, textarea) {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+.theme-dark .sms-main-content :is(thead, tr:nth-child(even)) {
+  background-color: #1e293b !important;
+}
+
+.theme-dark .sms-main-content .bg-rose-50 { background-color: rgba(136, 19, 55, 0.35) !important; }
+.theme-dark .sms-main-content .bg-emerald-50 { background-color: rgba(6, 78, 59, 0.35) !important; }
+.theme-dark .sms-main-content .bg-indigo-50 { background-color: rgba(49, 46, 129, 0.35) !important; }
+.theme-dark .observer-mode-main { background: linear-gradient(180deg, #0f172a 0%, #020617 100%) !important; }
+.theme-dark .student-home-welcome { background: #e2e8f0 !important; }
+.theme-dark .student-home-welcome__title { color: #0f172a !important; }
+.theme-dark .student-home-welcome__subtitle { color: #334155 !important; }
+
 .erp-auth-shell {
   position: relative;
   background: linear-gradient(150deg, #0c1a2f 0%, #16375d 55%, #25507f 100%);

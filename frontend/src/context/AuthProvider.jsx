@@ -75,7 +75,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.msg || "Login Failed",
+        message: error.response?.data?.msg || error.response?.data?.message || (error.request
+          ? "The server could not be reached. Check your connection and try again."
+          : "Login failed. Please try again."),
       };
     }
   };
@@ -110,7 +112,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.msg || "Registration Failed",
+        message: error.response?.data?.msg || error.response?.data?.message || (error.request
+          ? "The server could not be reached. Check your connection and try again."
+          : "Registration failed. Please try again."),
       };
     }
   };

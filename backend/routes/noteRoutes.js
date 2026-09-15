@@ -4,8 +4,10 @@ import authorizeRoles from "../middlewares/roleMiddleware.js";
 import uploadNotes from "../middlewares/uploadNotes.js";
 import {
   createNote,
+  deleteNote,
   getStudentNotes,
   getTeacherClassNotes,
+  renameNote,
 } from "../controllers/noteController.js";
 
 const router = express.Router();
@@ -24,6 +26,9 @@ router.get(
   authorizeRoles("teacher"),
   getTeacherClassNotes,
 );
+
+router.patch("/teacher/:noteId", protect, authorizeRoles("teacher"), renameNote);
+router.delete("/teacher/:noteId", protect, authorizeRoles("teacher"), deleteNote);
 
 router.get(
   "/student/me",

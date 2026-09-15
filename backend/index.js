@@ -25,6 +25,9 @@ dotenv.config();
 const PORT = process.env.PORT || 1000;
 const app = express();
 const allowedOrigins = [
+  "http://localhost",
+  "http://localhost:80",
+  "http://localhost:3000",
   "http://localhost:5173",
   "https://sms-sage-mu.vercel.app",
   "https://sms-git-main-parthiv-s-projects1.vercel.app",
@@ -33,7 +36,11 @@ const allowedOrigins = [
 app.use(requestLogger);
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      // Server-to-server and same-origin Docker proxy requests have no Origin header.
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],

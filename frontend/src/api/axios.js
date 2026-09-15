@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const apiBaseUrl = String(import.meta.env.VITE_API_URL || "http://localhost:1000")
+// Docker/Nginx serves the frontend and API through the same localhost origin.
+// VITE_API_URL remains available for an explicitly configured remote deployment.
+export const apiBaseUrl = String(import.meta.env.VITE_API_URL || window.location.origin)
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 
@@ -22,6 +24,16 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
+    const serverMessage = error.response?.data?.msg || error.response?.data?.message;
+    const message = serverMessage || (error.request
+      ? "The server could not be reached. Check that the application is running and try again."
+      : error.message || "The request could not be completed.");
+
+    // A visible, consistent alert supplements each page's inline validation message.
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("sms-api-error", { detail: { message } }));
+    }
+
     const requestUrl = error.config?.url || "";
     const isAuthRequest =
       requestUrl.includes("/auth/login") ||
@@ -89,6 +101,9 @@ export const uploadNote = (formData) =>
   });
 export const fetchTeacherNotes = (classAssigned) =>
   instance.get(`/notes/teacher/${classAssigned}`);
+export const renameTeacherNote = (noteId, title) =>
+  instance.patch(`/notes/teacher/${noteId}`, { title });
+export const deleteTeacherNote = (noteId) => instance.delete(`/notes/teacher/${noteId}`);
 export const fetchStudentNotes = () => instance.get("/notes/student/me");
 
 // --- TEACHER API CALLS ---

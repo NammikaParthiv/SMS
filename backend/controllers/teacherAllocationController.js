@@ -297,8 +297,7 @@ export const getMyClassStudents = async (req, res) => {
     }
 
     const students = await User.find({ role: "student", classAssigned })
-      .select("name email classAssigned rollNumber")
-      .sort({ name: 1 });
+      .select("name email classAssigned rollNumber");
 
     // Ensure roll numbers exist for all students in this class
     for (const student of students) {
@@ -306,6 +305,11 @@ export const getMyClassStudents = async (req, res) => {
         await ensureRollNumberForStudent(student);
       }
     }
+
+    students.sort((a, b) => String(a.rollNumber || "").localeCompare(String(b.rollNumber || ""), undefined, {
+      numeric: true,
+      sensitivity: "base",
+    }));
 
     const subjects = Array.from(new Set(allocations.map((a) => a.subject))).sort((a, b) =>
       a.localeCompare(b),

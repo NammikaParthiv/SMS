@@ -37,27 +37,48 @@ const Marks = () => {
   }, [exams]);
 
   const selectedExam = exams[selectedExamIndex] || null;
+  const bestScore = Math.max(...exams.map((exam) => exam.percentage || 0), 0);
+  const overallScore = exams.length
+    ? Math.round(exams.reduce((sum, exam) => sum + (exam.percentage || 0), 0) / exams.length)
+    : 0;
 
   return (
-    <div className="min-h-screen bg-[var(--erp-content-bg-top)] mx-4 md:mx-12 mt-12 mb-16 animate-in fade-in duration-700">
+    <div className="space-y-7 animate-in fade-in duration-700">
       {error && (
         <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm font-bold">
           {error}
         </div>
       )}
 
+      <section className="relative overflow-hidden rounded-4xl bg-linear-to-br from-indigo-700 via-violet-700 to-sky-700 p-8 sm:p-10 text-white shadow-xl">
+        <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-white/10" />
+        <p className="relative text-xs font-black uppercase tracking-[0.22em] text-indigo-200">Academic performance</p>
+        <div className="relative mt-3 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div><h1 className="text-4xl font-black tracking-tight">My Marks</h1><p className="mt-2 max-w-xl text-sm font-medium text-indigo-100">Explore your exam performance and subject-wise scores in one place.</p></div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="rounded-2xl bg-white/10 px-4 py-3"><p className="text-2xl font-black">{exams.length}</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Exams</p></div>
+            <div className="rounded-2xl bg-white/10 px-4 py-3"><p className="text-2xl font-black">{overallScore}%</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Average</p></div>
+            <div className="rounded-2xl bg-white/10 px-4 py-3"><p className="text-2xl font-black">{bestScore}%</p><p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Best</p></div>
+          </div>
+        </div>
+      </section>
+
       {loading ? (
         <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm font-black text-slate-500 animate-pulse">
           Loading marks...
         </div>
       ) : exams.length === 0 ? (
-        <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm text-slate-500 font-semibold">
-          No marks available yet.
+        <div className="grid min-h-80 place-items-center rounded-[2.5rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
+          <div>
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl bg-indigo-50 text-4xl">📈</div>
+            <h2 className="mt-6 text-2xl font-black text-slate-900">Your marks will appear here</h2>
+            <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-relaxed text-slate-500">No marks have been published yet. Once your teacher records an exam result, you can track every score and subject result here.</p>
+          </div>
         </div>
       ) : (
         <>
           {/* Bar Graph */}
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm mb-10">
+          <div className="bg-white p-6 sm:p-10 rounded-[3rem] border border-slate-100 shadow-sm">
             <div className="flex justify-between items-center mb-12">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Academic Progress</h2>
@@ -93,7 +114,7 @@ const Marks = () => {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-10">
+          <div className="flex flex-col lg:flex-row gap-7">
             {/* Exam list */}
             <div className="lg:w-2/3 space-y-4">
               <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 ml-2">

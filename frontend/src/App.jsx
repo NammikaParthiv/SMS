@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
+import ApiAlerts from "./components/common/ApiAlerts";
 
 import Layout from "./components/layout/Layout";
 import StudentList from "./pages/admin/StudentList";
@@ -36,6 +37,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ApiAlerts />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/welcome" element={<Welcome />} />

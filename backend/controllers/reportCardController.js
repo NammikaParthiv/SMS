@@ -24,36 +24,17 @@ const ensureSpace = (doc, requiredHeight = 60) => {
   }
 };
 
-const drawTriangleLogo = (doc, centerX, topY, size = 36) => {
-  const half = size / 2;
-  const height = size * 0.95;
-
-  doc.save();
-
-  // Base gradient blocks to mimic sidebar logo hues
-  doc.fillColor("#e5e7eb").rect(centerX - size, topY + height * 0.65, size * 2, size * 0.14).fill();
-  doc.fillColor("#cbd5e1").rect(centerX - size * 0.6, topY + height * 0.72, size * 1.2, size * 0.12).fill();
-
-  // Main pyramid face
-  doc.fillColor("#111827").polygon(
-    [centerX, topY],
-    [centerX - half, topY + height],
-    [centerX + half, topY + height],
-  ).fill();
-
-  // Highlighted side
-  doc.fillColor("#9ca3af").polygon(
-    [centerX, topY],
-    [centerX + half * 0.72, topY + height * 0.92],
-    [centerX + half * 0.12, topY + height * 0.92],
-  ).fill();
-
-  // Base shimmer
-  doc.fillColor("#e5e7eb").rect(centerX - half, topY + height, size, 3).fill();
-
-  // Apex opening
-  doc.fillColor("#f9fafb").circle(centerX, topY + 6, size * 0.12).fill();
-  doc.restore();
+const drawSchoolHeader = (doc) => {
+  const left = doc.page.margins.left;
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const y = doc.y;
+  doc.roundedRect(left, y, width, 74, 8).fill("#0f2b46");
+  doc.circle(left + 35, y + 37, 20).fill("#ffffff");
+  doc.fillColor("#0f2b46").font("Helvetica-Bold").fontSize(15).text("PS", left + 24, y + 31, { width: 22, align: "center" });
+  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(19).text("PYRAMID SCHOOL", left + 68, y + 18);
+  doc.fillColor("#bfdbfe").font("Helvetica").fontSize(9).text("STUDENT ACADEMIC REPORT", left + 69, y + 45);
+  doc.fillColor("#dbeafe").font("Helvetica").fontSize(8).text(`ISSUED ${formatDate(new Date()).toUpperCase()}`, left + width - 132, y + 33, { width: 116, align: "right" });
+  doc.y = y + 92;
 };
 
 const drawSectionHeader = (doc, label) => {
@@ -63,8 +44,8 @@ const drawSectionHeader = (doc, label) => {
   const y = doc.y;
 
   doc.save();
-  doc.fillColor("#e5e7eb").rect(left, y, width, 22).fill();
-  doc.fillColor("#111827").font("Helvetica-Bold").fontSize(11).text(label, left + 10, y + 6);
+  doc.roundedRect(left, y, width, 24, 6).fill("#e0e7ff");
+  doc.fillColor("#3730a3").font("Helvetica-Bold").fontSize(10).text(label.toUpperCase(), left + 10, y + 7);
   doc.restore();
 
   doc.y = y + 28;
@@ -72,16 +53,41 @@ const drawSectionHeader = (doc, label) => {
 
 const drawPageFrame = (doc) => {
   doc.save();
-  doc.rect(24, 24, doc.page.width - 48, doc.page.height - 48)
-    .lineWidth(1.4)
-    .strokeColor("#d1d5db")
+  doc.rect(22, 22, doc.page.width - 44, doc.page.height - 44)
+    .lineWidth(1)
+    .strokeColor("#cbd5e1")
     .stroke();
-  doc.rect(30, 30, doc.page.width - 60, doc.page.height - 60)
+  doc.rect(27, 27, doc.page.width - 54, doc.page.height - 54)
     .lineWidth(0.6)
-    .strokeColor("#e5e7eb")
+    .strokeColor("#c7d2fe")
     .stroke();
-  doc.rect(24, 24, doc.page.width - 48, 80).fill("#f9fafb");
   doc.restore();
+};
+
+const drawStudentProfile = (doc, { student, classAssigned, attendancePercentage, explicitExamName }) => {
+  const left = doc.page.margins.left;
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const y = doc.y;
+  doc.roundedRect(left, y, width, 96, 8).fill("#f8fafc").strokeColor("#dbe4ee").lineWidth(0.8).stroke();
+
+  // Default student portrait: used consistently when no photo is available in the report.
+  const avatarX = left + 49;
+  const avatarY = y + 48;
+  doc.circle(avatarX, avatarY, 31).fill("#dbeafe");
+  doc.circle(avatarX, avatarY - 10, 9).fill("#2563eb");
+  doc.roundedRect(avatarX - 16, avatarY + 2, 32, 20, 10).fill("#2563eb");
+
+  const infoX = left + 100;
+  const rightX = left + 305;
+  const label = (text, value, x, rowY) => {
+    doc.fillColor("#64748b").font("Helvetica-Bold").fontSize(7.5).text(text.toUpperCase(), x, rowY);
+    doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(10).text(String(value || "-"), x, rowY + 10, { width: 180 });
+  };
+  label("Student name", student.name, infoX, y + 18);
+  label("Class & roll number", `${classAssigned}  •  ${student.rollNumber || "-"}`, infoX, y + 57);
+  label("Email address", student.email, rightX, y + 18);
+  label("Assessment", explicitExamName || "Academic progress report", rightX, y + 57);
+  doc.y = y + 110;
 };
 
 const collectRecentExamSummaries = (marksDocs, explicitExamName) => {
@@ -145,71 +151,46 @@ const buildReportCardPdf = async ({
 
   drawPageFrame(doc);
 
-  const centerX = doc.page.width / 2;
-  const headerTop = doc.y;
-  drawTriangleLogo(doc, centerX, headerTop, 40);
-  doc.y = headerTop + 72;
-
-  // Title block
-  doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(22).text("Progress Report", { align: "center" });
-  doc.moveDown(0.1);
-  doc.fillColor("#4b5563").font("Helvetica").fontSize(11).text("Academic Report Card", { align: "center" });
-  doc.fillColor("#6b7280").fontSize(9).text(`Generated on ${formatDate(new Date())}`, { align: "center" });
-  doc.moveDown(1.4);
-
-  drawSectionHeader(doc, "Student Information");
+  drawSchoolHeader(doc);
+  const headingLeft = doc.page.margins.left;
+  const headingWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  // PDFKit retains the previous text X coordinate, so explicitly anchor headings
+  // to the full content width to keep them centered on one line.
+  doc.fillColor("#0f2b46").font("Helvetica-Bold").fontSize(17).text(
+    "ACADEMIC PERFORMANCE REPORT",
+    headingLeft,
+    doc.y,
+    { width: headingWidth, align: "center", lineBreak: false },
+  );
+  doc.y += 25;
+  doc.fillColor("#64748b").font("Helvetica").fontSize(9).text(
+    explicitExamName ? `Assessment: ${explicitExamName}` : "Consolidated assessment record",
+    headingLeft,
+    doc.y,
+    { width: headingWidth, align: "center", lineBreak: false },
+  );
+  doc.moveDown(1.3);
 
   const left = doc.page.margins.left;
   const contentWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-  const columnWidth = (contentWidth - 20) / 2;
-  const rowHeight = 18;
-
-  const infoRows = [
-    ["Student Name", student.name],
-    ["Roll No", student.rollNo || "-"],
-    ["Class", classAssigned],
-    ["Email", student.email],
-    ["Report Type", explicitExamName ? "Single Exam" : "Recent Exams"],
-    ["Attendance %", `${attendancePercentage}%`],
-  ];
-
-  for (let i = 0; i < infoRows.length; i += 2) {
-    ensureSpace(doc, rowHeight + 6);
-    const rowY = doc.y;
-    const leftItem = infoRows[i];
-    const rightItem = infoRows[i + 1];
-
-    doc.fillColor("#334155").font("Helvetica-Bold").fontSize(10).text(leftItem[0], left, rowY, { width: columnWidth });
-    doc.fillColor("#0f172a").font("Helvetica").fontSize(10).text(leftItem[1], left + 90, rowY, {
-      width: columnWidth - 90,
-    });
-
-    if (rightItem) {
-      const rightX = left + columnWidth + 20;
-      doc.fillColor("#334155").font("Helvetica-Bold").fontSize(10).text(rightItem[0], rightX, rowY, {
-        width: columnWidth,
-      });
-      doc.fillColor("#0f172a").font("Helvetica").fontSize(10).text(rightItem[1], rightX + 90, rowY, {
-        width: columnWidth - 90,
-      });
-    }
-
-    doc.y = rowY + rowHeight;
-  }
-
-  doc.moveDown(0.6);
+  drawStudentProfile(doc, { student, classAssigned, attendancePercentage, explicitExamName });
 
   drawSectionHeader(doc, "Attendance Summary");
-  doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(12).text(`Attendance: ${attendancePercentage}%`);
+  doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(11).text(`Attendance record: ${attendancePercentage}%`);
+  const attendanceBarY = doc.y + 8;
+  const attendanceBarWidth = contentWidth - 112;
+  doc.roundedRect(left + 112, attendanceBarY, attendanceBarWidth, 10, 5).fill("#e2e8f0");
+  doc.roundedRect(left + 112, attendanceBarY, attendanceBarWidth * Math.min(attendancePercentage, 100) / 100, 10, 5).fill(attendancePercentage >= 75 ? "#10b981" : "#f59e0b");
+  doc.y = attendanceBarY + 18;
 
   doc.moveDown(0.8);
 
   // Assignment summary above exams
-  drawSectionHeader(doc, "Assignment Submission");
+  drawSectionHeader(doc, "Assignment Completion");
   const totalAssignments = assignmentRows.length;
   const submissionRate =
     totalAssignments === 0 ? 0 : Number(((submittedCount / totalAssignments) * 100).toFixed(2));
-  doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(12).text(`Submission Rate: ${submissionRate}%`);
+  doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(11).text(`Completed assignments: ${submittedCount} of ${totalAssignments} (${submissionRate}%)`);
   doc.moveDown(1);
 
   drawSectionHeader(doc, "Exam Performance");
@@ -218,29 +199,44 @@ const buildReportCardPdf = async ({
     doc.fillColor("#64748b").font("Helvetica").fontSize(10).text("No exam marks available.");
   } else {
     examSummaries.forEach((exam, examIndex) => {
-      ensureSpace(doc, 46);
-      doc.fillColor("#0f172a").font("Helvetica-Bold").fontSize(12).text(`${examIndex + 1}. ${exam.examName}`, left, doc.y, {
+      ensureSpace(doc, 120 + exam.subjects.length * 18);
+      doc.fillColor("#0f2b46").font("Helvetica-Bold").fontSize(12).text(`${examIndex + 1}. ${exam.examName}`, left, doc.y, {
         width: contentWidth,
       });
       doc.moveDown(0.6);
 
       const rowY = doc.y;
       const col1 = left;
-      const col2 = left + 180;
-      const col3 = left + 360;
+      const col2 = left + 210;
+      const col3 = left + 315;
+      const col4 = left + 410;
 
-      doc.fillColor("#111827").font("Helvetica-Bold").fontSize(10);
-      doc.text("Max Marks", col1, rowY);
-      doc.text("Marks Obtained", col2, rowY);
-      doc.text("%", col3, rowY);
+      doc.roundedRect(left, rowY - 4, contentWidth, 19, 4).fill("#0f2b46");
+      doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(9);
+      doc.text("SUBJECT", col1 + 8, rowY);
+      doc.text("MAX", col2, rowY);
+      doc.text("SCORED", col3, rowY);
+      doc.text("RESULT", col4, rowY);
 
-      doc.moveDown(0.6);
-      doc.fillColor("#0f172a").font("Helvetica").fontSize(11);
-      doc.text(`${exam.totalMax}`, col1, doc.y, { width: 160 });
-      doc.text(`${exam.totalObtained}`, col2, doc.y, { width: 160 });
-      doc.text(`${exam.percentage}%`, col3, doc.y, { width: 80 });
+      doc.y = rowY + 22;
+      exam.subjects.forEach((subject, subjectIndex) => {
+        const subjectY = doc.y;
+        if (subjectIndex % 2 === 0) doc.rect(left, subjectY - 3, contentWidth, 17).fill("#f8fafc");
+        const percentage = Number(((subject.marksObtained / subject.maxMarks) * 100).toFixed(1));
+        doc.fillColor("#1e293b").font("Helvetica-Bold").fontSize(9).text(subject.subject.toUpperCase(), col1 + 8, subjectY);
+        doc.font("Helvetica").text(String(subject.maxMarks), col2, subjectY);
+        doc.text(String(subject.marksObtained), col3, subjectY);
+        doc.fillColor(percentage >= 40 ? "#047857" : "#be123c").font("Helvetica-Bold").text(`${percentage}% ${percentage >= 40 ? "PASS" : "NEEDS SUPPORT"}`, col4, subjectY, { width: 105 });
+        doc.y = subjectY + 18;
+      });
 
-      doc.moveDown(1.3);
+      const totalY = doc.y + 3;
+      doc.roundedRect(left, totalY - 3, contentWidth, 20, 4).fill("#e2e8f0");
+      doc.fillColor("#0f2b46").font("Helvetica-Bold").fontSize(9.5);
+      doc.text(`TOTAL: ${exam.totalObtained} / ${exam.totalMax}`, left + 8, totalY);
+      doc.text(`OVERALL: ${exam.percentage}%`, col3, totalY);
+
+      doc.y = totalY + 28;
     });
   }
 
@@ -251,12 +247,12 @@ const buildReportCardPdf = async ({
   const signY = doc.y + 24;
 
   doc.save();
-  doc.strokeColor("#cbd5f5").lineWidth(1.2);
+  doc.strokeColor("#94a3b8").lineWidth(1.2);
   doc.moveTo(signLeft, signY).lineTo(signLeft + 180, signY).stroke();
   doc.moveTo(signRight - 180, signY).lineTo(signRight, signY).stroke();
   doc.restore();
 
-  doc.fillColor("#64748b").font("Helvetica-Bold").fontSize(9.5);
+  doc.fillColor("#475569").font("Helvetica-Bold").fontSize(9.5);
   doc.text("Class Teacher", signLeft, signY + 8);
   doc.text("Principal", signRight - 180, signY + 8, { width: 180, align: "right" });
 
@@ -274,7 +270,7 @@ export const generateReportCard = async (req, res) => {
       return res.status(400).json({ msg: "Invalid student id" });
     }
 
-    const student = await User.findById(studentId).select("name email role classAssigned rollNo photo");
+    const student = await User.findById(studentId).select("name email role classAssigned rollNumber photo");
     if (!student || student.role !== "student") {
       return res.status(404).json({ msg: "Student not found" });
     }

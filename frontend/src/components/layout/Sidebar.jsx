@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen, onNavigate, theme }) => {
   const roleMenus = {
     admin: [
       { name: "Home", icon: "\u{1F3E0}", path: "/dashboard" },
-      { name: "Profile", icon: "\u{1F464}", path: "/profile" },
+      { name: "Statistics", icon: "\u{1F4C8}", path: "/profile" },
       { name: "Teachers List", icon: "\u{1F468}\u200D\u{1F3EB}", path: "/admin/teachers" },
       { name: "Students List", icon: "\u{1F9D1}\u200D\u{1F393}", path: "/admin/students" },
       { name: "Global Marks", icon: "\u{1F4CA}", path: "/marks" },

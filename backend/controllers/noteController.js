@@ -1,4 +1,6 @@
 import Note from "../models/Note.js";
+import fs from "fs";
+import path from "path";
 import TeacherAllocation from "../models/TeacherAllocation.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
@@ -10,9 +12,11 @@ const normalizeSubject = (value) => String(value || "").trim();
 const groupBySubject = (notes) => {
   const map = new Map();
   notes.forEach((note) => {
-    const subject = note.subject;
+    // Older notes may have been stored as "Maths" while the UI uses "maths".
+    // Normalize here so all uploaded notes appear in the correct student subject box.
+    const subject = normalizeSubject(note.subject).toLowerCase();
     if (!map.has(subject)) map.set(subject, []);
-    map.get(subject).push(note);
+    map.get(subject).push({ ...note, subject });
   });
 
   return Array.from(map.entries()).map(([subject, items]) => ({
@@ -51,7 +55,8 @@ export const createNote = async (req, res) => {
     }
 
     const normalizedPath = req.file.path.replace(/\\/g, "/");
-    const fileUrl = `${req.protocol}://${req.get("host")}/${normalizedPath}`;
+    // A relative URL keeps uploaded files on the same origin in Docker and locally.
+    const fileUrl = `/${normalizedPath}`;
     const fileName = req.file.originalname;
     const safeTitle = String(title || fileName).trim();
 
@@ -95,6 +100,40 @@ export const createNote = async (req, res) => {
     });
   } catch {
     return res.status(500).json({ msg: "Server error" });
+  }
+};
+
+export const renameNote = async (req, res) => {
+  try {
+    const title = String(req.body?.title || "").trim();
+    if (!title) return res.status(400).json({ msg: "A note title is required" });
+
+    const note = await Note.findOne({ _id: req.params.noteId, uploadedBy: req.user.id });
+    if (!note) return res.status(404).json({ msg: "Note not found, or you do not have permission to rename it" });
+
+    note.title = title;
+    await note.save();
+    return res.status(200).json({ msg: "Note renamed successfully", note: { id: note._id, title: note.title } });
+  } catch {
+    return res.status(400).json({ msg: "Invalid note id" });
+  }
+};
+
+export const deleteNote = async (req, res) => {
+  try {
+    const note = await Note.findOneAndDelete({ _id: req.params.noteId, uploadedBy: req.user.id });
+    if (!note) return res.status(404).json({ msg: "Note not found, or you do not have permission to delete it" });
+
+    const storedFileName = path.basename(String(note.fileUrl || ""));
+    const storedFilePath = path.resolve("uploads", "notes", storedFileName);
+    const notesRoot = path.resolve("uploads", "notes");
+    if (storedFileName && storedFilePath.startsWith(notesRoot) && fs.existsSync(storedFilePath)) {
+      fs.unlinkSync(storedFilePath);
+    }
+
+    return res.status(200).json({ msg: "Note deleted successfully" });
+  } catch {
+    return res.status(400).json({ msg: "Invalid note id" });
   }
 };
 

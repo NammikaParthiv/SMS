@@ -62,7 +62,7 @@ const AdminDashboard = ({ user }) => {
       <div className="bg-white p-10 rounded-4xl border border-slate-100 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Admin Profile</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Statistics</p>
             <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{user?.name}</h1>
             <p className="text-slate-500 font-medium mt-2">System overview and approvals hub</p>
           </div>

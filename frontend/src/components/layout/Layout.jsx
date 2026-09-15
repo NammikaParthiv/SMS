@@ -70,6 +70,7 @@ const Layout = () => {
       >
         <Sidebar
           isOpen={isSidebarOpen}
+          theme={theme}
           onNavigate={() => {
             if (window.innerWidth < 768) {
               setSidebarOpen(false);
@@ -191,7 +192,7 @@ const Layout = () => {
         </header>
 
         <main
-          className={`flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 ${
+          className={`sms-main-content flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 ${
             isAdminObserverProfileRoute ? "observer-mode-main" : "erp-content-main"
           }`}
         >

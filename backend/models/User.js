@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
     },
     rollNumber: {
       type: String,
-      unique: true,
       sparse: true,//docs that actually have the feild
       trim: true,
     },
@@ -70,6 +69,12 @@ const userSchema = new mongoose.Schema(
     },
   },
   { timestamps: true },
+);
+
+// Roll sequences restart per actual class (for example 8-A and 8-B), not globally.
+userSchema.index(
+  { classAssigned: 1, rollNumber: 1 },
+  { unique: true, partialFilterExpression: { rollNumber: { $type: "string" } } },
 );
 
 const User = mongoose.model("User", userSchema);

@@ -4,6 +4,8 @@ import {
   fetchStudentNotes,
   fetchTeacherNotes,
   uploadNote,
+  renameTeacherNote,
+  deleteTeacherNote,
 } from "../api/axios";
 import { useAuth } from "../hooks/useAuth";
 import { SUBJECTS, subjectLabelWithEmoji } from "../constants/subjects";
@@ -41,6 +43,8 @@ const Notes = () => {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [editingNote, setEditingNote] = useState(null);
+  const [editedTitle, setEditedTitle] = useState("");
 
   const loadTeacherClasses = async () => {
     setLoading(true);
@@ -161,6 +165,31 @@ const Notes = () => {
       setError(err.response?.data?.msg || "Failed to upload note");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleRename = async () => {
+    if (!editingNote || !editedTitle.trim()) return;
+    setError("");
+    try {
+      await renameTeacherNote(editingNote.id, editedTitle.trim());
+      setSuccess("Note renamed successfully.");
+      setEditingNote(null);
+      await loadTeacherNotes(selectedClass?.classAssigned);
+    } catch (err) {
+      setError(err.response?.data?.msg || "Failed to rename note");
+    }
+  };
+
+  const handleDelete = async (note) => {
+    if (!window.confirm(`Delete “${note.title}”? This also removes its uploaded file.`)) return;
+    setError("");
+    try {
+      await deleteTeacherNote(note.id);
+      setSuccess("Note deleted successfully.");
+      await loadTeacherNotes(selectedClass?.classAssigned);
+    } catch (err) {
+      setError(err.response?.data?.msg || "Failed to delete note");
     }
   };
 
@@ -337,14 +366,11 @@ const Notes = () => {
                           {new Date(note.createdAt).toLocaleDateString()}
                         </p>
                       </div>
-                      <a
-                        href={note.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block w-full text-center bg-white border-t border-slate-200 py-3 text-[11px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50 transition-colors"
-                      >
-                        Open File
-                      </a>
+                      <div className="grid grid-cols-3 border-t border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest">
+                        <a href={note.fileUrl} target="_blank" rel="noreferrer" className="py-3 text-center text-indigo-600 hover:bg-indigo-50">Open</a>
+                        <button type="button" onClick={() => { setEditingNote(note); setEditedTitle(note.title || ""); }} className="border-x border-slate-200 text-amber-600 hover:bg-amber-50">Rename</button>
+                        <button type="button" onClick={() => handleDelete(note)} className="text-rose-600 hover:bg-rose-50">Delete</button>
+                      </div>
                     </div>
                   );
                 })}
@@ -371,11 +397,8 @@ const Notes = () => {
                     </span>
                   </div>
 
-                  {Object.keys(notesBySubject).length === 0 ? (
-                    <p className="text-slate-500 font-semibold py-4">No notes available yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-                      {Object.keys(notesBySubject).map((subject) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+                      {SUBJECTS.map((subject) => (
                         <button
                           key={subject}
                           type="button"
@@ -394,7 +417,6 @@ const Notes = () => {
                         </button>
                       ))}
                     </div>
-                  )}
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -417,7 +439,13 @@ const Notes = () => {
                   </div>
 
                   {(notesBySubject[selectedSubject] || []).length === 0 ? (
-                    <p className="text-slate-500 font-semibold py-4">No notes uploaded for this subject yet.</p>
+                    <div className="grid min-h-72 place-items-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                      <div>
+                        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-indigo-100 text-2xl">📚</div>
+                        <p className="mt-4 font-black text-slate-800">No notes uploaded for this subject yet.</p>
+                        <p className="mt-1 text-sm font-medium text-slate-500">Your teacher&apos;s files will appear here.</p>
+                      </div>
+                    </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {(notesBySubject[selectedSubject] || []).map((note) => {
@@ -453,6 +481,20 @@ const Notes = () => {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {editingNote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-xl font-black text-slate-900">Rename note</h3>
+            <p className="mt-1 text-sm font-medium text-slate-500">Only you can rename notes that you uploaded.</p>
+            <input autoFocus value={editedTitle} onChange={(event) => setEditedTitle(event.target.value)} className="mt-5 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 font-semibold text-slate-800 outline-none focus:border-indigo-500" />
+            <div className="mt-5 flex justify-end gap-3">
+              <button type="button" onClick={() => setEditingNote(null)} className="rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-600">Cancel</button>
+              <button type="button" onClick={handleRename} className="rounded-xl bg-indigo-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">Save name</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

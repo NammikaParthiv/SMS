@@ -142,7 +142,6 @@ const StudentProfile = () => {
     student.attendanceAbsentDays ??
     Math.max((student.attendanceTotalDays || 0) - presentDays, 0);
   const circleSize = 220;
-  const radius = 95;
 
   const presentAngle = (attendancePercent / 100) * 360;
   const attendanceBackground =
@@ -150,19 +149,12 @@ const StudentProfile = () => {
       ? "#22c55e"
       : `conic-gradient(#22c55e 0deg ${presentAngle}deg, #ef4444 ${presentAngle}deg 360deg)`;
 
-  const buildRing = (percent, color) => {
-    const safePercent = Number.isFinite(percent) ? Math.min(Math.max(percent, 0), 100) : 0;
-    const stroke = (safePercent / 100) * 2 * Math.PI * radius;
-    const gap = Math.max(2 * Math.PI * radius - stroke, 0);
-    return { stroke, gap, color };
-  };
-
   const pendingTasks = Number(student.pendingTasks || 0);
   const pendingPercent = Math.min(pendingTasks * 10, 100); // scale 0-10+ tasks into ring
-  const pendingRing = buildRing(pendingPercent, "#F59E0B");
-  const dashOffsetStart = 0;
-  const pendingCircleSize = 200;
-  const pendingRadius = 72;
+  const pendingAngle = (pendingPercent / 100) * 360;
+  const pendingBackground = pendingTasks === 0
+    ? "#22c55e"
+    : `conic-gradient(#f59e0b 0deg ${pendingAngle}deg, #e2e8f0 ${pendingAngle}deg 360deg)`;
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
@@ -276,41 +268,13 @@ const StudentProfile = () => {
           <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest block">
             Pending Submissions
           </span>
-          <div className="mt-4 flex items-center justify-center">
-            <svg
-              width={pendingCircleSize}
-              height={pendingCircleSize}
-              viewBox="0 0 220 220"
-              className="drop-shadow-sm transition-transform duration-300 hover:scale-105"
-            >
-              <circle cx="110" cy="110" r={pendingRadius} stroke="#E2E8F0" strokeWidth="14" fill="none" />
-              <circle
-                cx="110"
-                cy="110"
-                r={pendingRadius}
-                stroke={pendingRing.color}
-                strokeWidth="14"
-                fill="none"
-                strokeDasharray={`${pendingRing.stroke} ${pendingRing.gap}`}
-                strokeDashoffset={dashOffsetStart}
-                strokeLinecap="round"
-                transform="rotate(-90 110 110)"
-              >
-                <title>{`${pendingTasks} pending task(s)`}</title>
-              </circle>
-              <text x="110" y="114" textAnchor="middle" className="fill-slate-900" style={{ fontSize: "26px", fontWeight: 900 }}>
-                {pendingTasks}
-              </text>
-              <text
-                x="110"
-                y="134"
-                textAnchor="middle"
-                className="fill-slate-500"
-                style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.2em" }}
-              >
-                PENDING
-              </text>
-            </svg>
+          <div className="mt-6 flex items-center justify-center">
+            <div className="relative rounded-full shadow-md transition-transform duration-300 hover:scale-105" style={{ width: circleSize, height: circleSize, background: pendingBackground }} title={`${pendingTasks} pending task(s)`}>
+              <div className="absolute inset-8 rounded-full bg-white flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-slate-900">{pendingTasks}</span>
+                <span className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Pending</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -450,4 +414,3 @@ const StudentProfile = () => {
 };
 
 export default StudentProfile;
-
